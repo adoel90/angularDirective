@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Modal Window Directive</title>
+ 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>	
+<style>
+.modal-overlay {
+	position:absolute;
+	z-index:9999;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-color:#000;
+	opacity: 0.8;
+}
+.modal-background {
+	z-index:10000;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+}
+.modal-content {
+	padding:10px;
+	text-align: center;
+}
+.modal-close {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	padding: 5px;
+	cursor: pointer;
+	display: inline-block;
+}
+</style>
+
+<script type="text/javascript">
+	angular.module('simpleModal', [])
+		.directive('modalWindow', function(){
+			return {
+				restrict: 'E',
+				scope: {
+					show: '='
+				},
+				replace: true, //Replace DOM with this template
+				//he inclusion of part or all of an electronic document into oneor more other documents by hypertext reference.
+				transclude: true, 
+				template: "<div ng-show='show'><div class='modaloverlay' ng-click='hideModal()'></div><div class='modal-background' ng-style='windowStyle'><div class='modal-close' ng-click='hideModal()'>X</div><div class='modal-content' ng-transclude></div></div></div>",
+
+				//register DOM listeners as well as update the DOM
+				link:function(scope, element, attributes){
+					//Use the scope option to create isolate scopes when making components that you want to reuse throughout your app
+
+					scope.windowStyle = {};// baris sentence ini berisi 'hal- hal' yang nanti-nya di di isi dengan attribut - atributes
+
+					if(attributes.width){
+						scope.windowStyle.width = attributes.width;
+					}
+					if(attributes.heigth){
+						scope.windowStyle.height = attributes.height;
+					}
+
+					//Function yang mengkondisikan ng-show='show': FALSE !!!
+					scope.hideModal = function(){
+						scope.show = false;
+					}
+				}
+			}
+		})
+		.controller('ModalCtrl', ['$scope', function($scope) {
+			$scope.modalShown = false;
+
+			$scope.toggleModal = function() {
+					$scope.modalShown = !$scope.modalShown;
+				};
+			}
+		]);
+</script>
+
+</head>
+<body ng-app='simpleModal'>
+
+<!-- Ini template yang bakal di jadiin DIRECTIVE
+
+		<div ng-show='show'>
+			<div class='modaloverlay' ng-click='hideModal()'></div>
+		
+			<div class='modal-background' ng-style='windowStyle'>
+				<div class='modal-close' ng-click='hideModal()'>X</div>
+				<div class='modal-content' ng-transclude></div>
+			</div>
+		</div>
+ -->
+
+<modal-window show='modalShown' widht='400px' height='60%'>
+	<p>Haii !!! Simple Modal Window </p>
+</modal-window>
+</body>
+</html>
+
+<!--
+Creating a Directive that Manipulates the DOM
+
+
+	Directives that want to modify the DOM typically use the link option to register DOM listeners as well as update the DOM. It is executed after the template has been cloned and is where directive logic will be put.
+
+	link takes a function with the following signature:
+
+		***function link(scope, element, attrs, controller, transcludeFn) { ... }****, where:
+
+
+
+
+	scope : an Angular scope object.
+	element : is the jqLite-wrapped element that this directive matches.
+	attrs :  a hash object with key-value pairs of normalized attribute names and their 
+			corresponding 	attribute values.
+	
+	controller : the directive's required controller instance(s) or its own controller (if any). 
+					The exact value depends on the directive's require property.
+	
+	transcludeFn: a transclude linking function pre-bound to the correct transclusion scope.
+
+-->
